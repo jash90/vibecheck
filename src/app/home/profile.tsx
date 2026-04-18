@@ -51,6 +51,14 @@ export default function ProfileTab() {
         </Card>
 
         <Button
+          label={t('profile.notifications')}
+          variant="secondary"
+          size="md"
+          fullWidth
+          onPress={() => router.push('/notification-settings')}
+        />
+
+        <Button
           label={t('profile.crisisResources')}
           variant="secondary"
           size="lg"

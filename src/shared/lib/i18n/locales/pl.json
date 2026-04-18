@@ -246,5 +246,19 @@
   "insights.adultingWeekly": "Wskazówka tygodnia",
   "insights.correlationTitle": "Co widzimy w Twoich danych",
   "insights.correlationPositive": "w dni z tym nawykiem nastrój był wyższy",
-  "insights.correlationNegative": "w dni z tym nawykiem nastrój był niższy"
+  "insights.correlationNegative": "w dni z tym nawykiem nastrój był niższy",
+
+  "profile.notifications": "Powiadomienia",
+
+  "notifications.title": "Twój VibeCheck dnia",
+  "notifications.body": "Pora na szybki check-in. Jak dziś leci?",
+  "notifications.settingsTitle": "Powiadomienia",
+  "notifications.dailyReminder": "Przypomnienie dnia",
+  "notifications.dailyReminderHint": "Jedno delikatne przypomnienie, aby nie przerywać streaka.",
+  "notifications.reminderTime": "Godzina przypomnienia",
+  "notifications.hour": "Godzina",
+  "notifications.minute": "Minuty",
+  "notifications.previewAt": "Otrzymasz przypomnienie o {{time}}",
+  "notifications.lowMoodAlerts": "Powiadomienia o złym nastroju",
+  "notifications.lowMoodAlertsHint": "Delikatne wsparcie, gdy widzimy, że nie jest łatwo."
 }

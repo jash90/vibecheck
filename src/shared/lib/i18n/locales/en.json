@@ -234,5 +234,19 @@
   "insights.adultingWeekly": "Weekly tip",
   "insights.correlationTitle": "What we noticed in your data",
   "insights.correlationPositive": "days with this habit — mood ran higher",
-  "insights.correlationNegative": "days with this habit — mood ran lower"
+  "insights.correlationNegative": "days with this habit — mood ran lower",
+
+  "profile.notifications": "Notifications",
+
+  "notifications.title": "Your daily VibeCheck",
+  "notifications.body": "Quick check-in time. How's it going today?",
+  "notifications.settingsTitle": "Notifications",
+  "notifications.dailyReminder": "Daily reminder",
+  "notifications.dailyReminderHint": "One gentle nudge so you don't break your streak.",
+  "notifications.reminderTime": "Reminder time",
+  "notifications.hour": "Hour",
+  "notifications.minute": "Minute",
+  "notifications.previewAt": "You'll get a reminder at {{time}}",
+  "notifications.lowMoodAlerts": "Low-mood alerts",
+  "notifications.lowMoodAlertsHint": "Gentle support when we see things are tough."
 }

@@ -73,6 +73,10 @@ export default function RootLayout() {
                     name="create-challenge"
                     options={{ presentation: 'modal' }}
                   />
+                  <Stack.Screen
+                    name="notification-settings"
+                    options={{ presentation: 'modal' }}
+                  />
                 </Stack>
               </QueryClientProvider>
             </ConvexProvider>
