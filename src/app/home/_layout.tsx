@@ -38,6 +38,13 @@ export default function HomeTabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="progress"
+        options={{
+          title: t('progress.tab'),
+          tabBarIcon: ({ color }) => <TabIcon emoji="🏆" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="friends"
         options={{
           title: t('friends.title'),

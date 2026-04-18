@@ -67,6 +67,12 @@ export default function RootLayout() {
                     name="crisis-resources"
                     options={{ presentation: 'modal' }}
                   />
+                  <Stack.Screen name="challenges" />
+                  <Stack.Screen name="challenge/[id]" />
+                  <Stack.Screen
+                    name="create-challenge"
+                    options={{ presentation: 'modal' }}
+                  />
                 </Stack>
               </QueryClientProvider>
             </ConvexProvider>

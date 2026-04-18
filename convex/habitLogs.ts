@@ -1,8 +1,10 @@
 import { getAuthUserId } from '@convex-dev/auth/server';
 import { ConvexError, v } from 'convex/values';
 
+import { detectAndUnlockAchievements } from './achievements';
 import { toLocalDate } from './_helpers';
 import { mutation, query } from './_generated/server';
+import { addSkillXpFromHabit } from './lifeSkills';
 import { awardXp, recomputeStreakForUser } from './streaks';
 
 export const listForDate = query({
@@ -60,6 +62,8 @@ export const logCompletion = mutation({
     // Recompute streak first so XP multiplier reflects today's streak.
     await recomputeStreakForUser(ctx, userId);
     await awardXp(ctx, userId, 'habit');
+    await addSkillXpFromHabit(ctx, userId, habit.category);
+    await detectAndUnlockAchievements(ctx, userId);
     return { alreadyLogged: false as const, logId };
   },
 });
