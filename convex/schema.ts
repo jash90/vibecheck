@@ -163,6 +163,24 @@ export default defineSchema({
     .index('by_user', ['userId'])
     .index('by_user_and_skill', ['userId', 'skill']),
 
+  pushTokens: defineTable({
+    userId: v.id('users'),
+    token: v.string(),
+    platform: v.union(v.literal('ios'), v.literal('android'), v.literal('web')),
+    lastSeenAt: v.number(),
+  })
+    .index('by_user', ['userId'])
+    .index('by_token', ['token']),
+
+  notificationPreferences: defineTable({
+    userId: v.id('users'),
+    dailyReminderEnabled: v.boolean(),
+    reminderHour: v.number(), // 0..23 local time
+    reminderMinute: v.number(), // 0..59
+    lowMoodAlertsEnabled: v.boolean(),
+    updatedAt: v.number(),
+  }).index('by_user', ['userId']),
+
   insights: defineTable({
     userId: v.id('users'),
     kind: v.union(
