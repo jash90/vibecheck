@@ -105,16 +105,61 @@ export default defineSchema({
     .index('by_userA', ['userAId', 'status'])
     .index('by_userB', ['userBId', 'status']),
 
-  // Phase 2 — defined now so later migrations stay additive
   challenges: defineTable({
     title: v.string(),
     description: v.string(),
-    category: v.string(),
+    category: v.union(
+      v.literal('mental'),
+      v.literal('physical'),
+      v.literal('sleep'),
+      v.literal('nutrition'),
+      v.literal('mindfulness'),
+      v.literal('hydration'),
+      v.literal('mixed'),
+    ),
     durationDays: v.number(),
     xpReward: v.number(),
+    targetPerPerson: v.number(), // e.g. 7 logs in 7 days for a "log every day" challenge
     startDate: v.number(),
     endDate: v.number(),
     creatorId: v.id('users'),
     isPublic: v.boolean(),
-  }).index('by_creator', ['creatorId']),
+    status: v.union(v.literal('upcoming'), v.literal('active'), v.literal('completed')),
+  })
+    .index('by_creator', ['creatorId'])
+    .index('by_status_and_end', ['status', 'endDate']),
+
+  challengeParticipants: defineTable({
+    challengeId: v.id('challenges'),
+    userId: v.id('users'),
+    joinedAt: v.number(),
+    progress: v.number(), // 0..targetPerPerson
+    lastLogAt: v.optional(v.number()),
+  })
+    .index('by_challenge', ['challengeId'])
+    .index('by_user', ['userId']),
+
+  userAchievements: defineTable({
+    userId: v.id('users'),
+    achievementId: v.string(), // stable code identifier e.g. 'first_week'
+    unlockedAt: v.number(),
+  })
+    .index('by_user', ['userId'])
+    .index('by_user_and_achievement', ['userId', 'achievementId']),
+
+  lifeSkills: defineTable({
+    userId: v.id('users'),
+    skill: v.union(
+      v.literal('sleep_mastery'),
+      v.literal('physical_resilience'),
+      v.literal('emotional_intelligence'),
+      v.literal('body_awareness'),
+      v.literal('discipline'),
+    ),
+    xp: v.number(),
+    level: v.number(), // 1..5
+    updatedAt: v.number(),
+  })
+    .index('by_user', ['userId'])
+    .index('by_user_and_skill', ['userId', 'skill']),
 });

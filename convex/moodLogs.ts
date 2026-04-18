@@ -1,8 +1,10 @@
 import { getAuthUserId } from '@convex-dev/auth/server';
 import { ConvexError, v } from 'convex/values';
 
+import { detectAndUnlockAchievements } from './achievements';
 import { addDays, toLocalDate } from './_helpers';
 import { mutation, query } from './_generated/server';
+import { addSkillXpFromMood } from './lifeSkills';
 import { awardXp, recomputeStreakForUser } from './streaks';
 
 export const todayForMe = query({
@@ -85,6 +87,8 @@ export const log = mutation({
     if (isNewLog) {
       // Only award XP once per day — editing today's entry doesn't double-pay.
       await awardXp(ctx, userId, 'mood');
+      await addSkillXpFromMood(ctx, userId);
     }
+    await detectAndUnlockAchievements(ctx, userId);
   },
 });
