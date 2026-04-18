@@ -12,6 +12,8 @@ import { DailyCard } from '@features/home/components/DailyCard';
 import { EnergyRing } from '@features/home/components/EnergyRing';
 import { MiniLeaderboard } from '@features/home/components/MiniLeaderboard';
 import { StreakFlame } from '@features/home/components/StreakFlame';
+import { AdultingTipCard } from '@features/insights/components/AdultingTipCard';
+import { InsightCard } from '@features/insights/components/InsightCard';
 
 function greetingKey(): string {
   const hour = new Date().getHours();
@@ -25,6 +27,8 @@ export default function HomeScreen() {
   const user = useQuery(api.users.me);
   const streak = useQuery(api.streaks.getMyStreak);
   const dayScores = useQuery(api.streaks.getDayScores, { days: 7 });
+  const latestInsight = useQuery(api.insights.latestForDashboard);
+  const weeklyTip = useQuery(api.adultingTips.getThisWeekTip);
 
   const activeDays = (dayScores ?? []).filter((d) => d.habits > 0 || d.mood !== null).length;
   const consistencyScore = activeDays / 7;
@@ -71,6 +75,18 @@ export default function HomeScreen() {
           fullWidth
           onPress={() => router.push('/mood-check-in')}
         />
+
+        {latestInsight && latestInsight.safetyPassed ? (
+          <InsightCard
+            summary={latestInsight.summary}
+            kind={latestInsight.kind}
+            generatedAt={latestInsight.generatedAt}
+          />
+        ) : null}
+
+        {weeklyTip ? (
+          <AdultingTipCard title={weeklyTip.title} body={weeklyTip.body} />
+        ) : null}
 
         <MiniLeaderboard />
       </ScrollView>

@@ -162,4 +162,20 @@ export default defineSchema({
   })
     .index('by_user', ['userId'])
     .index('by_user_and_skill', ['userId', 'skill']),
+
+  insights: defineTable({
+    userId: v.id('users'),
+    kind: v.union(
+      v.literal('weekly_report'),
+      v.literal('correlation'),
+      v.literal('adulting_tip'),
+    ),
+    summary: v.string(),
+    action: v.optional(v.string()),
+    generatedAt: v.number(),
+    model: v.string(),
+    safetyPassed: v.boolean(),
+  })
+    .index('by_user_and_generatedAt', ['userId', 'generatedAt'])
+    .index('by_user_and_kind', ['userId', 'kind']),
 });

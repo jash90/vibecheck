@@ -9,6 +9,7 @@ import { Card } from '@shared/ui/Card';
 import { Screen } from '@shared/ui/Screen';
 
 import { BadgeCard } from '@features/achievements/components/BadgeCard';
+import { CorrelationCard } from '@features/insights/components/CorrelationCard';
 import { SkillTree } from '@features/lifeSkills/components/SkillTree';
 
 export default function ProgressTab() {
@@ -17,6 +18,7 @@ export default function ProgressTab() {
   const skills = useQuery(api.lifeSkills.listMine);
   const myChallenges = useQuery(api.challenges.listMine);
   const streak = useQuery(api.streaks.getMyStreak);
+  const correlations = useQuery(api.insights.recentCorrelations, { days: 14 });
 
   return (
     <Screen padded={false}>
@@ -39,6 +41,10 @@ export default function ProgressTab() {
             {t('progress.streakFreezeHint')}
           </Text>
         </Card>
+
+        {correlations && correlations.length > 0 ? (
+          <CorrelationCard correlations={correlations} />
+        ) : null}
 
         <SkillTree skills={skills ?? []} />
 
