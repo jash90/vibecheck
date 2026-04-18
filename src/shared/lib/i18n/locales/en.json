@@ -217,5 +217,22 @@
   "challenge.participants": "Participants",
   "challenge.endsIn_one": "Ends in {{count}} day",
   "challenge.endsIn_other": "Ends in {{count}} days",
-  "challenge.notFound": "Challenge not found."
+  "challenge.notFound": "Challenge not found.",
+
+  "insights.aiLabel": "AI",
+  "insights.kind.weekly_report": "Weekly summary",
+  "insights.kind.correlation": "Pattern we noticed",
+  "insights.kind.adulting_tip": "Adulting tip",
+  "insights.generated": "Generated {{when}}",
+  "insights.justNow": "just now",
+  "insights.minutesAgo_one": "{{count}} min ago",
+  "insights.minutesAgo_other": "{{count}} min ago",
+  "insights.hoursAgo_one": "{{count}} hr ago",
+  "insights.hoursAgo_other": "{{count}} hr ago",
+  "insights.daysAgo_one": "{{count}} day ago",
+  "insights.daysAgo_other": "{{count}} days ago",
+  "insights.adultingWeekly": "Weekly tip",
+  "insights.correlationTitle": "What we noticed in your data",
+  "insights.correlationPositive": "days with this habit — mood ran higher",
+  "insights.correlationNegative": "days with this habit — mood ran lower"
 }

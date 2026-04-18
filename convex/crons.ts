@@ -11,4 +11,11 @@ crons.daily(
   {},
 );
 
+crons.weekly(
+  'weekly AI insight generation',
+  { dayOfWeek: 'sunday', hourUTC: 18, minuteUTC: 0 }, // Sunday evening
+  internal.insights.generateWeeklyReports,
+  {},
+);
+
 export default crons;
