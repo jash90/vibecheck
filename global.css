@@ -1,0 +1,47 @@
+@import 'tailwindcss';
+@import 'uniwind';
+
+@source './src';
+
+@layer theme {
+  :root {
+    @variant light {
+      --color-background: #ffffff;
+      --color-foreground: #0f172a;
+      --color-foreground-secondary: #475569;
+      --color-card: #f8fafc;
+      --color-card-elevated: #ffffff;
+      --color-border: #e2e8f0;
+      --color-muted: #94a3b8;
+      --color-primary: #8b5cf6;
+      --color-primary-foreground: #ffffff;
+      --color-accent: #ec4899;
+      --color-success: #10b981;
+      --color-warning: #f59e0b;
+      --color-danger: #ef4444;
+      --color-flame: #f97316;
+    }
+    @variant dark {
+      --color-background: #0b0f1a;
+      --color-foreground: #f8fafc;
+      --color-foreground-secondary: #94a3b8;
+      --color-card: #111827;
+      --color-card-elevated: #1f2937;
+      --color-border: #1f2937;
+      --color-muted: #64748b;
+      --color-primary: #a78bfa;
+      --color-primary-foreground: #0b0f1a;
+      --color-accent: #f472b6;
+      --color-success: #34d399;
+      --color-warning: #fbbf24;
+      --color-danger: #f87171;
+      --color-flame: #fb923c;
+    }
+  }
+}
+
+@theme {
+  --font-sans: 'System';
+  --radius-card: 16px;
+  --radius-pill: 9999px;
+}

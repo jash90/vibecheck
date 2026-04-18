@@ -1,0 +1,58 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+.npm/
+.yarn/
+
+# Bun
+bun.lockb
+
+# Expo
+.expo/
+.expo-shared/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+ios/
+android/
+*.orig.*
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Convex
+.convex/
+convex/_generated/
+
+# Metro / Babel / TS caches
+.metro-cache/
+.cache/
+*.tsbuildinfo
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Test coverage
+coverage/
+
+# EAS
+.easignore
+
+# Uniwind generated types
+uniwind-types.d.ts
+
+# Logs
+*.log
