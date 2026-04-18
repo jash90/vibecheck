@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "VibeCheck",
+    "slug": "vibecheck",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "vibecheck",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.vibecheck.app",
+      "infoPlist": {
+        "NSHealthShareUsageDescription": "VibeCheck używa danych z Apple Health, aby automatycznie zapisywać Twoje nawyki snu i aktywności.",
+        "NSHealthUpdateUsageDescription": "VibeCheck może zapisywać sesje mindfulness i oddechowe do Apple Health.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.vibecheck.app",
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.POST_NOTIFICATIONS"
+      ]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-localization"
+    ],
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}
