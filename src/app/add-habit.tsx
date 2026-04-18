@@ -48,7 +48,10 @@ export default function AddHabitScreen() {
     } catch (e) {
       const code = (e as { data?: { code?: string } }).data?.code;
       if (code === 'HABIT_LIMIT_FREE_TIER') {
-        Alert.alert(t('common.error'), t('habits.freeTierLimit'));
+        Alert.alert(t('habits.freeTierLimit'), '', [
+          { text: t('common.cancel'), style: 'cancel' },
+          { text: t('paywall.seePro'), onPress: () => router.replace('/paywall') },
+        ]);
       } else {
         Alert.alert(t('common.error'), (e as Error).message);
       }

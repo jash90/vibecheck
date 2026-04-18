@@ -9,12 +9,14 @@ import { api } from '@convex/_generated/api';
 import { Button } from '@shared/ui/Button';
 import { Card } from '@shared/ui/Card';
 import { Screen } from '@shared/ui/Screen';
+import { useEntitlements } from '@shared/hooks/useEntitlements';
 
 export default function ProfileTab() {
   const { t } = useTranslation();
   const { signOut } = useAuthActions();
   const user = useQuery(api.users.me);
   const setHide = useMutation(api.users.setHideFromLeaderboards);
+  const { entitlements } = useEntitlements();
 
   return (
     <Screen padded={false}>
@@ -27,7 +29,24 @@ export default function ProfileTab() {
           <Text className="text-sm text-foreground-secondary">
             {t('home.level', { level: user?.level ?? 1 })} · 🔥 {user?.currentStreak ?? 0}
           </Text>
+          {entitlements.hasProBadge ? (
+            <View className="mt-1 px-3 py-1 rounded-pill bg-primary">
+              <Text className="text-xs font-bold text-primary-foreground">
+                {t('paywall.proBadge')}
+              </Text>
+            </View>
+          ) : null}
         </View>
+
+        {!entitlements.hasProBadge ? (
+          <Button
+            label={t('paywall.upgradeCta')}
+            variant="primary"
+            size="md"
+            fullWidth
+            onPress={() => router.push('/paywall')}
+          />
+        ) : null}
 
         <Card>
           <Text className="text-base font-bold text-foreground mb-3">{t('profile.settings')}</Text>

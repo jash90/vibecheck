@@ -77,6 +77,10 @@ export default function RootLayout() {
                     name="notification-settings"
                     options={{ presentation: 'modal' }}
                   />
+                  <Stack.Screen
+                    name="paywall"
+                    options={{ presentation: 'modal' }}
+                  />
                 </Stack>
               </QueryClientProvider>
             </ConvexProvider>
