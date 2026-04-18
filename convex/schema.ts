@@ -50,6 +50,13 @@ export default defineSchema({
 
     // Safety toggles
     hideFromLeaderboards: v.boolean(),
+
+    // Subscription — PRD §9. Tier gates non-safety premium features only.
+    subscriptionTier: v.optional(
+      v.union(v.literal('free'), v.literal('pro'), v.literal('family')),
+    ),
+    subscriptionExpiresAt: v.optional(v.number()),
+    familyPlanId: v.optional(v.string()),
   })
     .index('email', ['email'])
     .index('by_username', ['username']),

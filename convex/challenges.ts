@@ -122,6 +122,17 @@ export const create = mutation({
       throw new ConvexError({ code: 'INVALID_TARGET' });
     }
 
+    // Private challenges are a Pro feature. Public challenges (isPublic=true)
+    // remain free to keep the social virality of the product.
+    if (!args.isPublic) {
+      const user = await ctx.db.get(userId);
+      const tier =
+        user && 'subscriptionTier' in user ? (user.subscriptionTier ?? 'free') : 'free';
+      if (tier === 'free') {
+        throw new ConvexError({ code: 'PRIVATE_CHALLENGE_PRO_ONLY' });
+      }
+    }
+
     const now = Date.now();
     const startDate = args.startsAt ?? now;
     const endDate = startDate + args.durationDays * 24 * 60 * 60 * 1000;

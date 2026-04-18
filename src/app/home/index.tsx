@@ -7,6 +7,7 @@ import { api } from '@convex/_generated/api';
 import { Button } from '@shared/ui/Button';
 import { Card } from '@shared/ui/Card';
 import { Screen } from '@shared/ui/Screen';
+import { useEntitlements } from '@shared/hooks/useEntitlements';
 
 import { DailyCard } from '@features/home/components/DailyCard';
 import { EnergyRing } from '@features/home/components/EnergyRing';
@@ -29,6 +30,7 @@ export default function HomeScreen() {
   const dayScores = useQuery(api.streaks.getDayScores, { days: 7 });
   const latestInsight = useQuery(api.insights.latestForDashboard);
   const weeklyTip = useQuery(api.adultingTips.getThisWeekTip);
+  const { entitlements } = useEntitlements();
 
   const activeDays = (dayScores ?? []).filter((d) => d.habits > 0 || d.mood !== null).length;
   const consistencyScore = activeDays / 7;
@@ -77,11 +79,28 @@ export default function HomeScreen() {
         />
 
         {latestInsight && latestInsight.safetyPassed ? (
-          <InsightCard
-            summary={latestInsight.summary}
-            kind={latestInsight.kind}
-            generatedAt={latestInsight.generatedAt}
-          />
+          entitlements.canSeeFullAIInsight ? (
+            <InsightCard
+              summary={latestInsight.summary}
+              kind={latestInsight.kind}
+              generatedAt={latestInsight.generatedAt}
+            />
+          ) : (
+            <Card onPress={() => router.push('/paywall')}>
+              <Text className="text-sm font-bold text-foreground mb-1">
+                ✨ {t('paywall.insightTeaser')}
+              </Text>
+              <Text
+                className="text-sm text-foreground-secondary"
+                numberOfLines={2}
+              >
+                {latestInsight.summary.slice(0, 60)}…
+              </Text>
+              <Text className="text-xs text-primary font-semibold mt-2">
+                {t('paywall.seePro')} →
+              </Text>
+            </Card>
+          )
         ) : null}
 
         {weeklyTip ? (

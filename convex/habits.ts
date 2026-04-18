@@ -51,8 +51,12 @@ export const create = mutation({
       .collect();
 
     if (activeCount.length >= 3) {
-      // Free tier limit — Pro unlocks unlimited (Phase 5)
-      throw new ConvexError({ code: 'HABIT_LIMIT_FREE_TIER' });
+      const user = await ctx.db.get(userId);
+      const tier =
+        user && 'subscriptionTier' in user ? (user.subscriptionTier ?? 'free') : 'free';
+      if (tier === 'free') {
+        throw new ConvexError({ code: 'HABIT_LIMIT_FREE_TIER' });
+      }
     }
 
     return ctx.db.insert('habits', {

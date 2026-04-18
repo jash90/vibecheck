@@ -48,7 +48,15 @@ export default function CreateChallengeScreen() {
       });
       router.replace(`/challenge/${id}`);
     } catch (e) {
-      Alert.alert(t('common.error'), (e as Error).message);
+      const code = (e as { data?: { code?: string } }).data?.code;
+      if (code === 'PRIVATE_CHALLENGE_PRO_ONLY') {
+        Alert.alert(t('paywall.privateProTitle'), t('paywall.privateProBody'), [
+          { text: t('common.cancel'), style: 'cancel' },
+          { text: t('paywall.seePro'), onPress: () => router.replace('/paywall') },
+        ]);
+      } else {
+        Alert.alert(t('common.error'), (e as Error).message);
+      }
     } finally {
       setSubmitting(false);
     }
