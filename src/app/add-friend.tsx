@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, Text, TextInput, View } from 'react-native';
+import { Alert, ScrollView, Text, TextInput, View } from 'react-native';
 import { useMutation, useQuery } from 'convex/react';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { api } from '@convex/_generated/api';
 import { Button } from '@shared/ui/Button';
 import { Card } from '@shared/ui/Card';
+import { Icon } from '@shared/ui/Icon';
+import { ModalHeader } from '@shared/ui/ModalHeader';
 import { Screen } from '@shared/ui/Screen';
 
 export default function AddFriendScreen() {
@@ -32,13 +34,12 @@ export default function AddFriendScreen() {
   }
 
   return (
-    <Screen>
-      <View className="mt-4 mb-6 gap-2">
-        <Text className="text-3xl font-bold text-foreground">{t('friends.add')}</Text>
+    <Screen padded={false} safe={false}>
+      <ModalHeader title={t('friends.add')} />
+      <ScrollView className="flex-1" contentContainerClassName="px-6 py-6 gap-4">
         <Text className="text-base text-foreground-secondary">{t('friends.addByUsername')}</Text>
-      </View>
 
-      <View className="gap-3 mb-6">
+        <View className="gap-3 mb-2">
         <TextInput
           value={query}
           onChangeText={setQuery}
@@ -75,39 +76,40 @@ export default function AddFriendScreen() {
         </Card>
       ) : null}
 
-      {match ? (
-        <Card>
-          <View className="flex-row items-center gap-3 mb-3">
-            <View className="w-12 h-12 rounded-full bg-primary/20 items-center justify-center">
-              <Text className="text-2xl">🙂</Text>
+        {match ? (
+          <Card>
+            <View className="flex-row items-center gap-3 mb-3">
+              <View className="w-12 h-12 rounded-full bg-primary/20 items-center justify-center">
+                <Icon name="person" size={22} colorClassName="accent-primary" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-lg font-bold text-foreground">{match.username}</Text>
+                <Text className="text-sm text-foreground-secondary">
+                  {t('friends.level', { level: match.level })}
+                </Text>
+              </View>
             </View>
-            <View className="flex-1">
-              <Text className="text-lg font-bold text-foreground">{match.username}</Text>
-              <Text className="text-sm text-foreground-secondary">
-                {t('friends.level', { level: match.level })}
-              </Text>
-            </View>
-          </View>
-          <Button
-            label={sent ? t('friends.sent') : t('friends.sendRequest')}
-            variant={sent ? 'secondary' : 'primary'}
-            size="md"
-            fullWidth
-            disabled={sending || sent}
-            onPress={handleSend}
-          />
-          {sent ? (
             <Button
-              label={t('common.done')}
-              variant="ghost"
-              size="sm"
+              label={sent ? t('friends.sent') : t('friends.sendRequest')}
+              variant={sent ? 'secondary' : 'primary'}
+              size="md"
               fullWidth
-              onPress={() => router.back()}
-              className="mt-2"
+              disabled={sending || sent}
+              onPress={handleSend}
             />
-          ) : null}
-        </Card>
-      ) : null}
+            {sent ? (
+              <Button
+                label={t('common.done')}
+                variant="ghost"
+                size="sm"
+                fullWidth
+                onPress={() => router.back()}
+                className="mt-2"
+              />
+            ) : null}
+          </Card>
+        ) : null}
+      </ScrollView>
     </Screen>
   );
 }

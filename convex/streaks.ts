@@ -14,13 +14,14 @@ export const getMyStreak = query({
     if (!userId) return null;
     const user = await ctx.db.get(userId);
     if (!user) return null;
+    const currentStreak = user.currentStreak ?? 0;
     return {
-      current: user.currentStreak,
-      longest: user.longestStreak,
-      freezeTokens: user.streakFreezeTokens,
-      level: user.level,
-      xp: user.xp,
-      multiplier: streakMultiplier(user.currentStreak),
+      current: currentStreak,
+      longest: user.longestStreak ?? 0,
+      freezeTokens: user.streakFreezeTokens ?? 0,
+      level: user.level ?? 1,
+      xp: user.xp ?? 0,
+      multiplier: streakMultiplier(currentStreak),
     };
   },
 });
@@ -74,6 +75,12 @@ export async function recomputeStreakForUser(ctx: MutationCtx, userId: Id<'users
   const user = (await ctx.db.get(userId)) as Doc<'users'> | null;
   if (!user) return;
 
+  // While the streak is paused, freeze everything — don't decay, don't grow,
+  // don't touch freeze tokens. Auto-clears when `streakPausedUntil` passes.
+  if (user.streakPausedUntil && user.streakPausedUntil > Date.now()) {
+    return;
+  }
+
   const today = toLocalDate(Date.now());
   const start = addDays(today, -60);
 
@@ -110,18 +117,27 @@ export async function recomputeStreakForUser(ctx: MutationCtx, userId: Id<'users
     if (daysBetween(cursor, today) > 60) break;
   }
 
-  const longest = Math.max(user.longestStreak, streak);
+  const longest = Math.max(user.longestStreak ?? 0, streak);
 
+  const currentFreezes = user.streakFreezeTokens ?? 0;
   const freezeTokens =
-    activeDays.size > 0 && activeDays.size % 7 === 0 && user.streakFreezeTokens < 2
-      ? user.streakFreezeTokens + 1
-      : user.streakFreezeTokens;
+    activeDays.size > 0 && activeDays.size % 7 === 0 && currentFreezes < 2
+      ? currentFreezes + 1
+      : currentFreezes;
 
   await ctx.db.patch(userId, {
     currentStreak: streak,
     longestStreak: longest,
     streakFreezeTokens: freezeTokens,
   });
+}
+
+export interface XpAwardResult {
+  gained: number;
+  totalXp: number;
+  level: number;
+  leveledUp: boolean;
+  multiplier: number;
 }
 
 /**
@@ -131,15 +147,21 @@ export async function recomputeStreakForUser(ctx: MutationCtx, userId: Id<'users
 export async function awardXp(
   ctx: MutationCtx,
   userId: Id<'users'>,
-  kind: 'habit' | 'mood',
-): Promise<void> {
+  kind: 'habit' | 'mood' | 'habit_minimum',
+): Promise<XpAwardResult> {
   const user = (await ctx.db.get(userId)) as Doc<'users'> | null;
-  if (!user) return;
+  if (!user) {
+    return { gained: 0, totalXp: 0, level: 1, leveledUp: false, multiplier: 1 };
+  }
 
-  const base = kind === 'habit' ? 10 : 5;
-  const gained = Math.round(base * streakMultiplier(user.currentStreak));
-  const totalXp = user.xp + gained;
+  const base = kind === 'habit' ? 10 : kind === 'habit_minimum' ? 3 : 5;
+  const multiplier = streakMultiplier(user.currentStreak ?? 0);
+  const gained = Math.round(base * multiplier);
+  const totalXp = (user.xp ?? 0) + gained;
+  const prevLevel = user.level ?? 1;
   const level = levelForXp(totalXp);
 
   await ctx.db.patch(userId, { xp: totalXp, level });
+
+  return { gained, totalXp, level, leveledUp: level > prevLevel, multiplier };
 }

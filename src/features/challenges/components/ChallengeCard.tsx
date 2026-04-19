@@ -11,7 +11,10 @@ interface ChallengeCardProps {
   progress?: number;
   target: number;
   endsInDays: number;
-  xpReward: number;
+  finalizedAt?: number | null;
+  myAwardedXp?: number | null;
+  myFinalRank?: number | null;
+  zenMode?: boolean;
   onPress?: () => void;
 }
 
@@ -22,11 +25,25 @@ export function ChallengeCard({
   progress,
   target,
   endsInDays,
-  xpReward,
+  finalizedAt,
+  myAwardedXp,
+  myFinalRank,
+  zenMode = false,
   onPress,
 }: ChallengeCardProps) {
   const { t } = useTranslation();
   const percent = progress !== undefined ? Math.min(100, Math.round((progress / target) * 100)) : 0;
+
+  const isFinalized = Boolean(finalizedAt);
+  const awarded = myAwardedXp ?? 0;
+  const rankLabel =
+    myFinalRank === 1
+      ? t('challenge.rankFirst')
+      : myFinalRank === 2
+        ? t('challenge.rankSecond')
+        : myFinalRank === 3
+          ? t('challenge.rankThird')
+          : null;
 
   return (
     <Card onPress={onPress} elevated>
@@ -40,9 +57,27 @@ export function ChallengeCard({
             {description}
           </Text>
         </View>
-        <View className="px-2 py-1 rounded-pill bg-primary/20">
-          <Text className="text-xs font-semibold text-primary">+{xpReward} XP</Text>
-        </View>
+        {isFinalized ? (
+          awarded > 0 ? (
+            <View className="px-2 py-1 rounded-pill bg-primary/20">
+              <Text className="text-xs font-semibold text-primary">
+                {zenMode
+                  ? rankLabel ?? t('challenge.finished')
+                  : `+${awarded} XP${rankLabel ? ` · ${rankLabel}` : ''}`}
+              </Text>
+            </View>
+          ) : (
+            <View className="px-2 py-1 rounded-pill bg-card-elevated border border-border">
+              <Text className="text-xs font-semibold text-foreground-secondary">
+                {t('challenge.noPrize')}
+              </Text>
+            </View>
+          )
+        ) : !zenMode ? (
+          <View className="px-2 py-1 rounded-pill bg-primary/10 border border-primary/30">
+            <Text className="text-xs font-semibold text-primary">{t('challenge.prizePending')}</Text>
+          </View>
+        ) : null}
       </View>
 
       <View className="flex-row items-center gap-2 mb-3">
@@ -51,9 +86,15 @@ export function ChallengeCard({
             {t(`habits.cat${category.charAt(0).toUpperCase()}${category.slice(1)}`)}
           </Text>
         </View>
-        <Text className="text-xs text-foreground-secondary">
-          {t('challenge.endsIn', { count: endsInDays })}
-        </Text>
+        {!isFinalized ? (
+          <Text className="text-xs text-foreground-secondary">
+            {t('challenge.endsIn', { count: endsInDays })}
+          </Text>
+        ) : (
+          <Text className="text-xs text-foreground-secondary">
+            {t('challenge.finished')}
+          </Text>
+        )}
       </View>
 
       {progress !== undefined ? (

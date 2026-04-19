@@ -45,9 +45,9 @@ export const friendLeaderboard = query({
       userId: u._id,
       username: u.username ?? u.name ?? null,
       avatarUrl: u.avatarUrl ?? u.image ?? null,
-      score: Math.round(u.xp * streakMultiplier(u.currentStreak)),
-      level: u.level,
-      currentStreak: u.currentStreak,
+      score: Math.round((u.xp ?? 0) * streakMultiplier(u.currentStreak ?? 0)),
+      level: u.level ?? 1,
+      currentStreak: u.currentStreak ?? 0,
       isMe: u._id === userId,
     }));
 
@@ -117,8 +117,8 @@ export const categoryLeaderboard = query({
             username: person.username ?? person.name ?? null,
             avatarUrl: person.avatarUrl ?? person.image ?? null,
             score: 0,
-            level: person.level,
-            currentStreak: person.currentStreak,
+            level: person.level ?? 1,
+            currentStreak: person.currentStreak ?? 0,
             isMe: person._id === userId,
           };
         }
@@ -134,8 +134,8 @@ export const categoryLeaderboard = query({
           username: person.username ?? person.name ?? null,
           avatarUrl: person.avatarUrl ?? person.image ?? null,
           score: count,
-          level: person.level,
-          currentStreak: person.currentStreak,
+          level: person.level ?? 1,
+          currentStreak: person.currentStreak ?? 0,
           isMe: person._id === userId,
         };
       }),

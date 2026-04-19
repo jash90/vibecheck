@@ -2,6 +2,7 @@ import { getAuthUserId } from '@convex-dev/auth/server';
 import { ConvexError, v } from 'convex/values';
 
 import { detectAndUnlockAchievements } from './achievements';
+import { normalizeCategory } from './_focus';
 import { toLocalDate } from './_helpers';
 import { mutation, query } from './_generated/server';
 import { addSkillXpFromHabit } from './lifeSkills';
@@ -26,7 +27,9 @@ export const logCompletion = mutation({
     note: v.optional(v.string()),
     mood: v.optional(v.number()),
     durationMinutes: v.optional(v.number()),
+    value: v.optional(v.number()),
     timezoneOffsetMinutes: v.optional(v.number()),
+    isMinimumVersion: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -46,9 +49,16 @@ export const logCompletion = mutation({
       .take(1);
 
     if (existing.length > 0) {
-      return { alreadyLogged: true as const, logId: existing[0]!._id };
+      return {
+        alreadyLogged: true as const,
+        logId: existing[0]!._id,
+        xp: null,
+        identityCategory: habit.identityCategory ?? normalizeCategory(habit.category),
+        isMinimumVersion: false,
+      };
     }
 
+    const isMinimum = args.isMinimumVersion === true;
     const logId = await ctx.db.insert('habitLogs', {
       userId,
       habitId: args.habitId,
@@ -57,14 +67,22 @@ export const logCompletion = mutation({
       note: args.note,
       mood: args.mood,
       durationMinutes: args.durationMinutes,
+      value: args.value,
+      isMinimumVersion: isMinimum ? true : undefined,
     });
 
     // Recompute streak first so XP multiplier reflects today's streak.
     await recomputeStreakForUser(ctx, userId);
-    await awardXp(ctx, userId, 'habit');
+    const xp = await awardXp(ctx, userId, isMinimum ? 'habit_minimum' : 'habit');
     await addSkillXpFromHabit(ctx, userId, habit.category);
     await detectAndUnlockAchievements(ctx, userId);
-    return { alreadyLogged: false as const, logId };
+    return {
+      alreadyLogged: false as const,
+      logId,
+      xp,
+      identityCategory: habit.identityCategory ?? normalizeCategory(habit.category),
+      isMinimumVersion: isMinimum,
+    };
   },
 });
 

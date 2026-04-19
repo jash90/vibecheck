@@ -73,8 +73,10 @@ export async function addSkillXpFromHabit(
   const mapping: Record<string, LifeSkill> = {
     sleep: 'sleep_mastery',
     physical: 'physical_resilience',
+    movement: 'physical_resilience',
     mindfulness: 'emotional_intelligence',
     mental: 'emotional_intelligence',
+    mood: 'emotional_intelligence',
     hydration: 'body_awareness',
     nutrition: 'body_awareness',
   };

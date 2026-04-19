@@ -18,4 +18,11 @@ crons.weekly(
   {},
 );
 
+crons.weekly(
+  'weekly AI adulting tip generation',
+  { dayOfWeek: 'monday', hourUTC: 6, minuteUTC: 0 }, // Monday morning refresh
+  internal.adultingTips.generatePersonalizedForAll,
+  {},
+);
+
 export default crons;

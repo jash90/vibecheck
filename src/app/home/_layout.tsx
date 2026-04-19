@@ -1,7 +1,9 @@
 import { Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Text } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useCSSVariable } from 'uniwind';
+
+type IoniconName = keyof typeof Ionicons.glyphMap;
 
 export default function HomeTabsLayout() {
   const { t } = useTranslation();
@@ -9,6 +11,14 @@ export default function HomeTabsLayout() {
   const muted = useCSSVariable('--color-muted') as string | undefined;
   const bg = useCSSVariable('--color-background') as string | undefined;
   const border = useCSSVariable('--color-border') as string | undefined;
+
+  const renderIcon = (name: IoniconName) => {
+    const IconComponent = ({ color }: { color: string }) => (
+      <Ionicons name={name} size={22} color={color} />
+    );
+    IconComponent.displayName = `TabIcon(${name})`;
+    return IconComponent;
+  };
 
   return (
     <Tabs
@@ -27,41 +37,37 @@ export default function HomeTabsLayout() {
         name="index"
         options={{
           title: t('home.dailyCardTitle'),
-          tabBarIcon: ({ color }) => <TabIcon emoji="🏠" color={color} />,
+          tabBarIcon: renderIcon('home-outline'),
         }}
       />
       <Tabs.Screen
         name="habits"
         options={{
           title: t('habits.title'),
-          tabBarIcon: ({ color }) => <TabIcon emoji="✅" color={color} />,
+          tabBarIcon: renderIcon('checkmark-circle-outline'),
         }}
       />
       <Tabs.Screen
         name="progress"
         options={{
           title: t('progress.tab'),
-          tabBarIcon: ({ color }) => <TabIcon emoji="🏆" color={color} />,
+          tabBarIcon: renderIcon('trophy-outline'),
         }}
       />
       <Tabs.Screen
         name="friends"
         options={{
           title: t('friends.title'),
-          tabBarIcon: ({ color }) => <TabIcon emoji="👥" color={color} />,
+          tabBarIcon: renderIcon('people-outline'),
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: t('profile.title'),
-          tabBarIcon: ({ color }) => <TabIcon emoji="🙂" color={color} />,
+          tabBarIcon: renderIcon('person-outline'),
         }}
       />
     </Tabs>
   );
-}
-
-function TabIcon({ emoji, color }: { emoji: string; color: string }) {
-  return <Text style={{ color, fontSize: 20 }}>{emoji}</Text>;
 }

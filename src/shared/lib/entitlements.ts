@@ -14,13 +14,14 @@ export interface Entitlements {
   hasProBadge: boolean;
 }
 
-export function entitlementsFor(tier: SubscriptionTier | null | undefined): Entitlements {
-  const isPaid = tier === 'pro' || tier === 'family';
+export function entitlementsFor(_tier: SubscriptionTier | null | undefined): Entitlements {
+  // Pre-launch: every feature is unlocked by default. Paywalls will be
+  // reintroduced in a later phase once the app ships its first paid tier.
   return {
-    canCreateUnlimitedHabits: isPaid,
-    canCreatePrivateChallenges: isPaid,
-    canSeeFullAIInsight: isPaid,
-    canSeeFullCorrelations: isPaid,
-    hasProBadge: isPaid,
+    canCreateUnlimitedHabits: true,
+    canCreatePrivateChallenges: true,
+    canSeeFullAIInsight: true,
+    canSeeFullCorrelations: true,
+    hasProBadge: true,
   };
 }

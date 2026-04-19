@@ -2,6 +2,7 @@ import { Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Card } from '@shared/ui/Card';
+import { Icon, type IconName } from '@shared/ui/Icon';
 
 interface InsightCardProps {
   summary: string;
@@ -11,13 +12,14 @@ interface InsightCardProps {
 
 export function InsightCard({ summary, kind, generatedAt }: InsightCardProps) {
   const { t } = useTranslation();
-  const icon = kind === 'adulting_tip' ? '💡' : kind === 'correlation' ? '🔗' : '✨';
+  const iconName: IconName =
+    kind === 'adulting_tip' ? 'bulb' : kind === 'correlation' ? 'link' : 'sparkles';
   const kindLabel = t(`insights.kind.${kind}`);
 
   return (
     <Card elevated>
       <View className="flex-row items-center gap-2 mb-2">
-        <Text className="text-xl">{icon}</Text>
+        <Icon name={iconName} size={18} colorClassName="accent-primary" />
         <View className="flex-1">
           <Text className="text-sm font-bold text-foreground">{kindLabel}</Text>
         </View>

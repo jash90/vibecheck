@@ -1,6 +1,7 @@
 import { Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import { Icon, type IconName } from '@shared/ui/Icon';
 import { cn } from '@shared/lib/cn';
 
 interface BadgeCardProps {
@@ -24,12 +25,21 @@ export function BadgeCard({
     <View
       className={cn(
         'flex-1 rounded-card border p-4 items-center gap-2',
-        unlocked
-          ? 'bg-primary/10 border-primary'
-          : 'bg-card border-border',
+        unlocked ? 'bg-primary/10 border-primary' : 'bg-card border-border',
       )}
     >
-      <Text className={cn('text-4xl mb-1', !unlocked && 'opacity-30')}>{icon}</Text>
+      <View
+        className={cn(
+          'w-14 h-14 rounded-full items-center justify-center mb-1',
+          unlocked ? 'bg-primary/20' : 'bg-card-elevated',
+        )}
+      >
+        <Icon
+          name={icon as IconName}
+          size={28}
+          colorClassName={unlocked ? 'accent-primary' : 'accent-muted'}
+        />
+      </View>
       <Text
         className={cn(
           'text-sm font-bold text-center',
