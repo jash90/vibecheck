@@ -28,8 +28,14 @@ export default function ParentConsentScreen() {
     setSubmitting(true);
     setError(null);
     try {
-      await setParentEmail({ parentEmail: trimmed });
-      router.replace('/awaiting-parent');
+      const result = await setParentEmail({ parentEmail: trimmed });
+      // In dev deployments the backend auto-approves and skips the email loop
+      // so we can move straight into onboarding instead of the waiting screen.
+      if (result.autoApproved) {
+        router.replace('/focus-picker');
+      } else {
+        router.replace('/awaiting-parent');
+      }
     } catch (e) {
       Alert.alert(t('common.error'), (e as Error).message);
     } finally {

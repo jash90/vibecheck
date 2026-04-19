@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { api } from '@convex/_generated/api';
 import { Button } from '@shared/ui/Button';
 import { Card } from '@shared/ui/Card';
+import { Icon } from '@shared/ui/Icon';
 import { Screen } from '@shared/ui/Screen';
 
 import { FeatureRow } from '@features/paywall/components/FeatureRow';
@@ -55,7 +56,9 @@ export default function PaywallScreen() {
     <Screen padded={false}>
       <ScrollView className="flex-1" contentContainerClassName="px-6 py-6 gap-5">
         <View className="items-center gap-3 mt-4">
-          <Text className="text-6xl">✨</Text>
+          <View className="w-20 h-20 rounded-full bg-primary/20 border border-primary/40 items-center justify-center">
+            <Icon name="sparkles" size={44} colorClassName="accent-primary" />
+          </View>
           <Text className="text-3xl font-bold text-foreground text-center">
             {t('paywall.title')}
           </Text>

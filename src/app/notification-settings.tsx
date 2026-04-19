@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { api } from '@convex/_generated/api';
 import { Button } from '@shared/ui/Button';
 import { Card } from '@shared/ui/Card';
+import { ModalHeader } from '@shared/ui/ModalHeader';
 import { Screen } from '@shared/ui/Screen';
 import { cn } from '@shared/lib/cn';
 import {
@@ -14,6 +15,7 @@ import {
   requestAndRegisterPushToken,
   scheduleDailyReminder,
 } from '@shared/lib/notifications';
+import { type FocusCategory } from '@shared/constants/focus';
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 
@@ -22,6 +24,7 @@ export default function NotificationSettingsScreen() {
   const preferences = useQuery(api.pushTokens.getMyPreferences);
   const setPrefs = useMutation(api.pushTokens.setMyPreferences);
   const registerToken = useMutation(api.pushTokens.register);
+  const me = useQuery(api.users.me);
 
   const [enabled, setEnabled] = useState(true);
   const [lowMoodEnabled, setLowMoodEnabled] = useState(true);
@@ -54,7 +57,14 @@ export default function NotificationSettingsScreen() {
       });
 
       if (enabled) {
-        await scheduleDailyReminder(hour, minute, t('notifications.title'), t('notifications.body'));
+        const topFocus = (me?.focusCategories?.[0] ?? null) as FocusCategory | null;
+        const bodyKey = topFocus ? `notifications.bodyFor.${topFocus}` : 'notifications.body';
+        await scheduleDailyReminder(
+          hour,
+          minute,
+          t('notifications.title'),
+          t(bodyKey, { defaultValue: t('notifications.body') }),
+        );
       } else {
         await cancelDailyReminder();
       }
@@ -67,11 +77,9 @@ export default function NotificationSettingsScreen() {
   }
 
   return (
-    <Screen padded={false}>
+    <Screen padded={false} safe={false}>
+      <ModalHeader title={t('notifications.settingsTitle')} />
       <ScrollView className="flex-1" contentContainerClassName="px-6 py-6 gap-5">
-        <Text className="text-3xl font-bold text-foreground mt-4">
-          {t('notifications.settingsTitle')}
-        </Text>
 
         <Card>
           <View className="flex-row items-start gap-3 py-1">

@@ -65,9 +65,9 @@ export async function detectAndUnlockAchievements(
   }
 
   // streak-based
-  await tryUnlock('first_week', user.currentStreak >= 7);
-  await tryUnlock('streak_30', user.currentStreak >= 30);
-  await tryUnlock('level_10', user.level >= 10);
+  await tryUnlock('first_week', (user.currentStreak ?? 0) >= 7);
+  await tryUnlock('streak_30', (user.currentStreak ?? 0) >= 30);
+  await tryUnlock('level_10', (user.level ?? 1) >= 10);
 
   // mood journaling week: 7 consecutive days with mood entries
   const sevenDaysAgo = addDays(today, -6);

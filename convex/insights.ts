@@ -1,7 +1,7 @@
 import { getAuthUserId } from '@convex-dev/auth/server';
 import { v } from 'convex/values';
 
-import { callClaude } from './_claude';
+import { callOpenAi } from './_openai';
 import { computeCorrelations } from './_correlations';
 import { addDays, toLocalDate } from './_helpers';
 import { internal } from './_generated/api';
@@ -13,19 +13,18 @@ import {
   query,
 } from './_generated/server';
 
-const SYSTEM_PROMPT = `Jesteś pozytywnym, pełnym szacunku asystentem w aplikacji VibeCheck dla nastolatków 13–19 lat.
+const SYSTEM_PROMPT = `You are a positive, respectful assistant inside VibeCheck, a habit/mood app for teenagers aged 13-19.
 
-ZASADY (BEZWZGLĘDNE):
-- NIGDY nie diagnozuj, nie sugeruj chorób, zaburzeń ani leków.
-- NIE wspominaj o wadze, BMI, kaloriach, diecie ani wyglądzie.
-- NIE porównuj użytkownika do "idealnych" wartości ani do innych osób.
-- NIE sugeruj terapii ani konkretnych form leczenia.
-- Ton: ciepły, konkretny, bez ocen. Mówi "Ty", nie "użytkownik".
+HARD RULES:
+- NEVER diagnose, suggest illnesses, disorders, or medications.
+- NEVER mention weight, BMI, calories, dieting, or appearance.
+- NEVER compare the user to "ideal" values or to other people.
+- NEVER suggest therapy or specific forms of treatment.
+- Tone: warm, specific, non-judgmental. Address the user directly ("you"), never in the third person.
 
-Format: 2 zdania po polsku.
-- Zdanie 1: jedno konkretne pozytywne zauważenie z danych.
-- Zdanie 2: jedna mała, wykonalna sugestia na nadchodzący tydzień (opcjonalnie).
-Maksymalnie 180 znaków ŁĄCZNIE.`;
+FORMAT: 2 sentences, 180 characters total max.
+- Sentence 1: one concrete, positive observation from the data.
+- Sentence 2: one small, actionable suggestion for the upcoming week (optional).`;
 
 export const listMine = query({
   args: {},
@@ -47,12 +46,14 @@ export const latestForDashboard = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
 
-    const latest = await ctx.db
+    // Exclude `adulting_tip` — those are surfaced separately via the weekly
+    // tip card, so showing them here too creates duplicate content.
+    const recent = await ctx.db
       .query('insights')
       .withIndex('by_user_and_generatedAt', (q) => q.eq('userId', userId))
       .order('desc')
-      .first();
-    return latest ?? null;
+      .take(10);
+    return recent.find((i) => i.kind !== 'adulting_tip') ?? null;
   },
 });
 
@@ -112,7 +113,7 @@ export const recentCorrelations = query({
 });
 
 /**
- * Internal query — gather activity data for Claude prompt.
+ * Internal query — gather activity data for the LLM prompt.
  */
 export const gatherWeeklyData = internalQuery({
   args: { userId: v.id('users') },
@@ -176,7 +177,7 @@ export const generateWeeklyReportForUser = internalAction({
       habitLogs: { _id: string; localDate: string; habitId: string }[];
       moodLogs: { _id: string; localDate: string; mood: number }[];
       habits: { _id: string; category: string; name: string }[];
-      user: { currentStreak?: number; level?: number; xp?: number } | null;
+      user: { currentStreak?: number; level?: number; xp?: number; locale?: string } | null;
     } = await ctx.runQuery(internal.insights.gatherWeeklyData, { userId });
 
     if (!data.user) return;
@@ -210,10 +211,11 @@ export const generateWeeklyReportForUser = internalAction({
     ].join('\n');
 
     try {
-      const response = await callClaude({
+      const response = await callOpenAi({
         system: SYSTEM_PROMPT,
         userPrompt,
         maxTokens: 200,
+        locale: data.user.locale,
       });
 
       const summary = response.text.slice(0, 220);
@@ -226,7 +228,7 @@ export const generateWeeklyReportForUser = internalAction({
         safetyPassed: response.safetyPassed,
       });
     } catch (err) {
-      console.warn('[insights] claude call failed', String(err));
+      console.warn('[insights] openai call failed', String(err));
     }
   },
 });

@@ -1,7 +1,7 @@
 /**
  * Stable achievement definitions. Never rename `id` — user unlock rows
- * reference it. Icons are unicode emoji so they render without asset
- * bundling in Phase 2.
+ * reference it. `icon` is an Ionicons name (not an emoji) so the mobile UI
+ * can render it consistently with the rest of the app chrome.
  */
 
 export type AchievementCategory = 'streak' | 'habits' | 'mood' | 'social' | 'hidden';
@@ -11,7 +11,7 @@ export interface AchievementDef {
   category: AchievementCategory;
   nameKey: string;
   descriptionKey: string;
-  icon: string;
+  icon: string; // Ionicons glyph name, e.g. 'flame', 'trophy'
   xpReward: number;
 }
 
@@ -21,7 +21,7 @@ export const ACHIEVEMENTS: AchievementDef[] = [
     category: 'streak',
     nameKey: 'achievement.firstWeek.name',
     descriptionKey: 'achievement.firstWeek.description',
-    icon: '🔥',
+    icon: 'flame',
     xpReward: 100,
   },
   {
@@ -29,7 +29,7 @@ export const ACHIEVEMENTS: AchievementDef[] = [
     category: 'streak',
     nameKey: 'achievement.streak30.name',
     descriptionKey: 'achievement.streak30.description',
-    icon: '🌟',
+    icon: 'star',
     xpReward: 500,
   },
   {
@@ -37,7 +37,7 @@ export const ACHIEVEMENTS: AchievementDef[] = [
     category: 'habits',
     nameKey: 'achievement.sleepChampion.name',
     descriptionKey: 'achievement.sleepChampion.description',
-    icon: '😴',
+    icon: 'moon',
     xpReward: 200,
   },
   {
@@ -45,7 +45,7 @@ export const ACHIEVEMENTS: AchievementDef[] = [
     category: 'habits',
     nameKey: 'achievement.hydrationHero.name',
     descriptionKey: 'achievement.hydrationHero.description',
-    icon: '💧',
+    icon: 'water',
     xpReward: 200,
   },
   {
@@ -53,7 +53,7 @@ export const ACHIEVEMENTS: AchievementDef[] = [
     category: 'mood',
     nameKey: 'achievement.mindMaster.name',
     descriptionKey: 'achievement.mindMaster.description',
-    icon: '🧘',
+    icon: 'flower',
     xpReward: 250,
   },
   {
@@ -61,7 +61,7 @@ export const ACHIEVEMENTS: AchievementDef[] = [
     category: 'streak',
     nameKey: 'achievement.comebackKid.name',
     descriptionKey: 'achievement.comebackKid.description',
-    icon: '💪',
+    icon: 'refresh-circle',
     xpReward: 150,
   },
   {
@@ -69,7 +69,7 @@ export const ACHIEVEMENTS: AchievementDef[] = [
     category: 'social',
     nameKey: 'achievement.firstFriend.name',
     descriptionKey: 'achievement.firstFriend.description',
-    icon: '👥',
+    icon: 'people',
     xpReward: 50,
   },
   {
@@ -77,7 +77,7 @@ export const ACHIEVEMENTS: AchievementDef[] = [
     category: 'social',
     nameKey: 'achievement.challengeFinisher.name',
     descriptionKey: 'achievement.challengeFinisher.description',
-    icon: '🏆',
+    icon: 'trophy',
     xpReward: 300,
   },
   {
@@ -85,7 +85,7 @@ export const ACHIEVEMENTS: AchievementDef[] = [
     category: 'streak',
     nameKey: 'achievement.level10.name',
     descriptionKey: 'achievement.level10.description',
-    icon: '⭐',
+    icon: 'medal',
     xpReward: 100,
   },
   {
@@ -93,7 +93,7 @@ export const ACHIEVEMENTS: AchievementDef[] = [
     category: 'mood',
     nameKey: 'achievement.moodJournalingWeek.name',
     descriptionKey: 'achievement.moodJournalingWeek.description',
-    icon: '📓',
+    icon: 'journal',
     xpReward: 150,
   },
 ];

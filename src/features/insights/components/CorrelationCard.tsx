@@ -1,7 +1,10 @@
+import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Card } from '@shared/ui/Card';
+import { Icon } from '@shared/ui/Icon';
+import { habitCategoryMatchesFocus } from '@shared/constants/focus';
 
 interface CorrelationEntry {
   category: string;
@@ -12,20 +15,31 @@ interface CorrelationEntry {
 
 interface CorrelationCardProps {
   correlations: CorrelationEntry[];
+  focus?: readonly string[] | null;
 }
 
 const MIN_MEANINGFUL_DELTA = 0.7;
 
-export function CorrelationCard({ correlations }: CorrelationCardProps) {
+export function CorrelationCard({ correlations, focus }: CorrelationCardProps) {
   const { t } = useTranslation();
-  const meaningful = correlations.filter((c) => Math.abs(c.delta ?? 0) >= MIN_MEANINGFUL_DELTA);
+  const ordered = useMemo(() => {
+    const filtered = correlations.filter((c) => Math.abs(c.delta ?? 0) >= MIN_MEANINGFUL_DELTA);
+    if (!focus || focus.length === 0) return filtered;
+    return [...filtered].sort((a, b) => {
+      const aMatch = habitCategoryMatchesFocus(a.category, focus) ? 0 : 1;
+      const bMatch = habitCategoryMatchesFocus(b.category, focus) ? 0 : 1;
+      if (aMatch !== bMatch) return aMatch - bMatch;
+      return Math.abs(b.delta ?? 0) - Math.abs(a.delta ?? 0);
+    });
+  }, [correlations, focus]);
+  const meaningful = ordered;
 
   if (meaningful.length === 0) return null;
 
   return (
     <Card elevated>
       <View className="flex-row items-center gap-2 mb-3">
-        <Text className="text-xl">🔗</Text>
+        <Icon name="link" size={18} colorClassName="accent-primary" />
         <Text className="flex-1 text-sm font-bold text-foreground">
           {t('insights.correlationTitle')}
         </Text>

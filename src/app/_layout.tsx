@@ -49,6 +49,8 @@ export default function RootLayout() {
                   <Stack.Screen name="parent-consent" />
                   <Stack.Screen name="awaiting-parent" />
                   <Stack.Screen name="focus-picker" />
+                  <Stack.Screen name="identity-picker" />
+                  <Stack.Screen name="tendency-quiz" />
                   <Stack.Screen name="profile-setup" />
                   <Stack.Screen name="home" />
                   <Stack.Screen
@@ -75,6 +77,47 @@ export default function RootLayout() {
                   />
                   <Stack.Screen
                     name="notification-settings"
+                    options={{ presentation: 'modal' }}
+                  />
+                  <Stack.Screen
+                    name="pause-streak"
+                    options={{ presentation: 'fullScreenModal' }}
+                  />
+                  <Stack.Screen
+                    name="environment-experiments"
+                    options={{ presentation: 'fullScreenModal' }}
+                  />
+                  <Stack.Screen
+                    name="fresh-start"
+                    options={{ presentation: 'fullScreenModal' }}
+                  />
+                  <Stack.Screen
+                    name="reflection"
+                    options={{ presentation: 'fullScreenModal' }}
+                  />
+                  <Stack.Screen
+                    name="bright-spot"
+                    options={{ presentation: 'fullScreenModal' }}
+                  />
+                  <Stack.Screen
+                    name="partnership"
+                    options={{ presentation: 'fullScreenModal' }}
+                  />
+                  <Stack.Screen
+                    name="bad-habits"
+                    options={{ presentation: 'fullScreenModal' }}
+                  />
+                  <Stack.Screen
+                    name="bad-habit-new"
+                    options={{ presentation: 'fullScreenModal' }}
+                  />
+                  <Stack.Screen name="bad-habit/[id]" />
+                  <Stack.Screen
+                    name="weekly-review"
+                    options={{ presentation: 'modal' }}
+                  />
+                  <Stack.Screen
+                    name="achievements"
                     options={{ presentation: 'modal' }}
                   />
                   <Stack.Screen

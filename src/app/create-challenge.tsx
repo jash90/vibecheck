@@ -6,19 +6,21 @@ import { useTranslation } from 'react-i18next';
 
 import { api } from '@convex/_generated/api';
 import { Button } from '@shared/ui/Button';
+import { Icon, type IconName } from '@shared/ui/Icon';
+import { ModalHeader } from '@shared/ui/ModalHeader';
 import { Screen } from '@shared/ui/Screen';
 import { cn } from '@shared/lib/cn';
 
 type Category = 'mental' | 'physical' | 'sleep' | 'nutrition' | 'mindfulness' | 'hydration' | 'mixed';
 
-const CATEGORIES: { value: Category; emoji: string; labelKey: string }[] = [
-  { value: 'mixed', emoji: '🌟', labelKey: 'challenge.catMixed' },
-  { value: 'mental', emoji: '🧠', labelKey: 'habits.catMental' },
-  { value: 'physical', emoji: '🏃', labelKey: 'habits.catPhysical' },
-  { value: 'sleep', emoji: '😴', labelKey: 'habits.catSleep' },
-  { value: 'mindfulness', emoji: '🧘', labelKey: 'habits.catMindfulness' },
-  { value: 'hydration', emoji: '💧', labelKey: 'habits.catHydration' },
-  { value: 'nutrition', emoji: '🥗', labelKey: 'habits.catNutrition' },
+const CATEGORIES: { value: Category; icon: IconName; labelKey: string }[] = [
+  { value: 'mixed', icon: 'sparkles-outline', labelKey: 'challenge.catMixed' },
+  { value: 'mental', icon: 'bulb-outline', labelKey: 'habits.catMental' },
+  { value: 'physical', icon: 'walk-outline', labelKey: 'habits.catPhysical' },
+  { value: 'sleep', icon: 'moon-outline', labelKey: 'habits.catSleep' },
+  { value: 'mindfulness', icon: 'flower-outline', labelKey: 'habits.catMindfulness' },
+  { value: 'hydration', icon: 'water-outline', labelKey: 'habits.catHydration' },
+  { value: 'nutrition', icon: 'nutrition-outline', labelKey: 'habits.catNutrition' },
 ];
 
 const DURATION_PRESETS = [7, 14, 30];
@@ -48,26 +50,16 @@ export default function CreateChallengeScreen() {
       });
       router.replace(`/challenge/${id}`);
     } catch (e) {
-      const code = (e as { data?: { code?: string } }).data?.code;
-      if (code === 'PRIVATE_CHALLENGE_PRO_ONLY') {
-        Alert.alert(t('paywall.privateProTitle'), t('paywall.privateProBody'), [
-          { text: t('common.cancel'), style: 'cancel' },
-          { text: t('paywall.seePro'), onPress: () => router.replace('/paywall') },
-        ]);
-      } else {
-        Alert.alert(t('common.error'), (e as Error).message);
-      }
+      Alert.alert(t('common.error'), (e as Error).message);
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <Screen padded={false}>
+    <Screen padded={false} safe={false}>
+      <ModalHeader title={t('challenge.createTitle')} />
       <ScrollView className="flex-1" contentContainerClassName="px-6 py-6 gap-5">
-        <Text className="text-3xl font-bold text-foreground mt-4">
-          {t('challenge.createTitle')}
-        </Text>
 
         <View className="gap-2">
           <Text className="text-sm font-medium text-foreground">{t('challenge.titleLabel')}</Text>
@@ -115,7 +107,11 @@ export default function CreateChallengeScreen() {
                       : 'bg-card border-border active:bg-card-elevated',
                   )}
                 >
-                  <Text>{c.emoji}</Text>
+                  <Icon
+                    name={c.icon}
+                    size={16}
+                    colorClassName={isSelected ? 'accent-primary' : 'accent-foreground'}
+                  />
                   <Text
                     className={cn(
                       'text-sm font-medium',

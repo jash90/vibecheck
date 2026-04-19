@@ -1,8 +1,9 @@
-import { Linking, ScrollView, Text, View } from 'react-native';
+import { Linking, ScrollView, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@shared/ui/Button';
 import { Card } from '@shared/ui/Card';
+import { ModalHeader } from '@shared/ui/ModalHeader';
 import { Screen } from '@shared/ui/Screen';
 
 interface CrisisLine {
@@ -39,12 +40,10 @@ export default function CrisisResourcesScreen() {
   }
 
   return (
-    <Screen padded={false}>
+    <Screen padded={false} safe={false}>
+      <ModalHeader title={t('crisis.title')} />
       <ScrollView className="flex-1" contentContainerClassName="px-6 py-6 gap-4">
-        <View className="gap-2 mt-4 mb-2">
-          <Text className="text-3xl font-bold text-foreground">{t('crisis.title')}</Text>
-          <Text className="text-base text-foreground-secondary">{t('crisis.note')}</Text>
-        </View>
+        <Text className="text-base text-foreground-secondary">{t('crisis.note')}</Text>
 
         {lines.map((line) => (
           <Card key={line.title} elevated>

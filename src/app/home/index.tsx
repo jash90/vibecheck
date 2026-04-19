@@ -7,11 +7,15 @@ import { api } from '@convex/_generated/api';
 import { Button } from '@shared/ui/Button';
 import { Card } from '@shared/ui/Card';
 import { Screen } from '@shared/ui/Screen';
-import { useEntitlements } from '@shared/hooks/useEntitlements';
 
 import { DailyCard } from '@features/home/components/DailyCard';
+import { FreshStartBanner } from '@features/home/components/FreshStartBanner';
+import { PartnerCard } from '@features/home/components/PartnerCard';
+import { PausedCard } from '@features/home/components/PausedCard';
+import { TomorrowCommitmentCard } from '@features/home/components/TomorrowCommitmentCard';
+import { detectFreshStart } from '@shared/lib/freshStart';
 import { EnergyRing } from '@features/home/components/EnergyRing';
-import { MiniLeaderboard } from '@features/home/components/MiniLeaderboard';
+import { FocusProgressCard } from '@features/home/components/FocusProgressCard';
 import { StreakFlame } from '@features/home/components/StreakFlame';
 import { AdultingTipCard } from '@features/insights/components/AdultingTipCard';
 import { InsightCard } from '@features/insights/components/InsightCard';
@@ -30,7 +34,17 @@ export default function HomeScreen() {
   const dayScores = useQuery(api.streaks.getDayScores, { days: 7 });
   const latestInsight = useQuery(api.insights.latestForDashboard);
   const weeklyTip = useQuery(api.adultingTips.getThisWeekTip);
-  const { entitlements } = useEntitlements();
+
+  const todayIso = (() => {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  })();
+  const yesterdayReflection = useQuery(api.reflections.yesterdaysReflection, {
+    today: todayIso,
+  });
 
   const activeDays = (dayScores ?? []).filter((d) => d.habits > 0 || d.mood !== null).length;
   const consistencyScore = activeDays / 7;
@@ -50,9 +64,11 @@ export default function HomeScreen() {
             <Text className="text-sm text-foreground-secondary">
               {t(greetingKey(), { name: user?.username ?? '' }).trim()}
             </Text>
-            <Text className="text-lg font-semibold text-foreground mt-1">
-              {t('home.level', { level: user?.level ?? 1 })} · {t('home.xp', { xp: user?.xp ?? 0 })}
-            </Text>
+            {user?.zenMode ? null : (
+              <Text className="text-lg font-semibold text-foreground mt-1">
+                {t('home.level', { level: user?.level ?? 1 })} · {t('home.xp', { xp: user?.xp ?? 0 })}
+              </Text>
+            )}
           </View>
           <StreakFlame streak={streak?.current ?? 0} />
         </View>
@@ -68,7 +84,50 @@ export default function HomeScreen() {
           />
         </Card>
 
-        <DailyCard />
+        <FocusProgressCard />
+
+        <Button
+          label={t('home.weeklyReview')}
+          variant="ghost"
+          size="sm"
+          onPress={() => router.push('/weekly-review')}
+        />
+
+        {(() => {
+          if (user?.freshStartOptIn === false) return null;
+          const event = detectFreshStart({
+            schoolSemesterDates: user?.schoolSemesterDates ?? null,
+          });
+          if (!event) return null;
+          const todayStart = new Date();
+          todayStart.setHours(0, 0, 0, 0);
+          const alreadyDoneToday =
+            user?.lastFreshStartRitualAt != null &&
+            user.lastFreshStartRitualAt >= todayStart.getTime();
+          if (alreadyDoneToday) return null;
+          return (
+            <FreshStartBanner event={event} isRebel={user?.tendency === 'rebel'} />
+          );
+        })()}
+
+        {yesterdayReflection?.tomorrowCommitment ? (
+          <TomorrowCommitmentCard
+            reflectionId={yesterdayReflection._id}
+            commitmentText={yesterdayReflection.tomorrowCommitment}
+            outcome={yesterdayReflection.tomorrowCommitmentFulfilled ?? null}
+          />
+        ) : null}
+
+        {user?.streakPausedUntil && user.streakPausedUntil > Date.now() ? (
+          <PausedCard
+            until={user.streakPausedUntil}
+            reason={user.streakPauseReason}
+          />
+        ) : (
+          <DailyCard />
+        )}
+
+        <PartnerCard />
 
         <Button
           label={t('mood.title')}
@@ -78,36 +137,42 @@ export default function HomeScreen() {
           onPress={() => router.push('/mood-check-in')}
         />
 
+        {user?.reflectionEnabled && new Date().getHours() >= 19 ? (
+          <Button
+            label={t('reflection.homeCta')}
+            variant="secondary"
+            size="md"
+            fullWidth
+            onPress={() => router.push('/reflection')}
+          />
+        ) : null}
+
+        {new Date().getDay() === 0 && new Date().getHours() >= 17 ? (
+          <Button
+            label={t('brightSpot.homeCta')}
+            variant="secondary"
+            size="md"
+            fullWidth
+            onPress={() => router.push('/bright-spot')}
+          />
+        ) : null}
+
         {latestInsight && latestInsight.safetyPassed ? (
-          entitlements.canSeeFullAIInsight ? (
-            <InsightCard
-              summary={latestInsight.summary}
-              kind={latestInsight.kind}
-              generatedAt={latestInsight.generatedAt}
-            />
-          ) : (
-            <Card onPress={() => router.push('/paywall')}>
-              <Text className="text-sm font-bold text-foreground mb-1">
-                ✨ {t('paywall.insightTeaser')}
-              </Text>
-              <Text
-                className="text-sm text-foreground-secondary"
-                numberOfLines={2}
-              >
-                {latestInsight.summary.slice(0, 60)}…
-              </Text>
-              <Text className="text-xs text-primary font-semibold mt-2">
-                {t('paywall.seePro')} →
-              </Text>
-            </Card>
-          )
+          <InsightCard
+            summary={latestInsight.summary}
+            kind={latestInsight.kind}
+            generatedAt={latestInsight.generatedAt}
+          />
         ) : null}
 
         {weeklyTip ? (
-          <AdultingTipCard title={weeklyTip.title} body={weeklyTip.body} />
+          <AdultingTipCard
+            id={weeklyTip.id}
+            fallbackTitle={weeklyTip.title}
+            fallbackBody={weeklyTip.body}
+            source={weeklyTip.source}
+          />
         ) : null}
-
-        <MiniLeaderboard />
       </ScrollView>
     </Screen>
   );
